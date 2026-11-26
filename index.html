@@ -77,6 +77,61 @@
       nav.main a:hover { color: var(--ink); background: var(--paper-2); }
       nav.main a.active { color: var(--accent); }
 
+      /* ---------- hamburger + mobile menu ---------- */
+      .menu-toggle {
+        display: none;
+        width: 44px; height: 44px; min-height: 44px;
+        padding: 0; border: 1px solid var(--line); border-radius: 999px;
+        background: transparent; color: var(--ink); cursor: pointer;
+        align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+        flex-shrink: 0;
+      }
+      .menu-toggle span { display: block; width: 20px; height: 2px; background: currentColor; border-radius: 2px; }
+      .menu-toggle:hover { background: var(--paper-2); }
+      .menu-toggle:focus-visible, .menu-close:focus-visible, .mobile-nav a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+      .mobile-menu[hidden] { display: none !important; }
+      .mobile-menu {
+        position: fixed; inset: 0; z-index: 100;
+        background: var(--night); color: var(--night-text);
+        display: flex; flex-direction: column;
+        padding: 0 24px 28px;
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transform: translateY(-6px);
+        transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+      }
+      .mobile-menu.open { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+      .mobile-menu-head {
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        min-height: 60px; border-bottom: 1px solid var(--night-line); flex-shrink: 0;
+      }
+      .mobile-menu .wordmark { color: var(--night-text); }
+      .menu-close {
+        width: 44px; height: 44px; min-height: 44px; padding: 0;
+        border: 1px solid var(--night-line); border-radius: 999px;
+        background: transparent; color: var(--night-text); cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; line-height: 1; font-family: "Archivo", sans-serif; flex-shrink: 0;
+      }
+      .menu-close:hover { border-color: var(--gold); color: var(--gold); }
+      .mobile-nav { display: flex; flex-direction: column; overflow-y: auto; padding-top: 8px; }
+      .mobile-nav a {
+        font-family: "Newsreader", serif; font-weight: 600;
+        font-size: clamp(2rem, 9vw, 2.7rem); line-height: 1.12; letter-spacing: -0.01em;
+        color: var(--night-text); text-decoration: none;
+        padding: 15px 2px; min-height: 56px;
+        border-bottom: 1px solid var(--night-line);
+        display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+      }
+      .mobile-nav a .no {
+        font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; font-weight: 500;
+        letter-spacing: 0.12em; color: var(--gold); flex-shrink: 0;
+      }
+      .mobile-nav a:hover, .mobile-nav a.active { color: var(--gold); }
+      body.menu-open { overflow: hidden; }
+      @media (prefers-reduced-motion: reduce) {
+        .mobile-menu { transition: none; }
+      }
+
       /* ---------- hero ---------- */
       .hero { background: var(--night); color: var(--night-text); overflow: hidden; }
       .hero-in { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: end; padding: 72px 0 0; }
@@ -210,6 +265,7 @@
 
       @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
+        .mobile-menu { transition: none; }
       }
 
       /* ---------- mobile ---------- */
@@ -230,7 +286,9 @@
         .award-item { grid-template-columns: 1fr; gap: 6px; }
         .pub .kind { justify-self: start; }
         section.block { padding: 56px 0; }
-        nav.main a { padding: 8px 9px; font-size: 0.88rem; }
+        nav.main { display: none; }
+        .menu-toggle { display: inline-flex; }
+        .topbar-in { min-height: 60px; }
       }
     </style>
   </head>
@@ -238,6 +296,11 @@
     <header class="topbar">
       <div class="wrap topbar-in">
         <a class="wordmark" href="#top">Kelvin Simatwo</a>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
         <nav class="main" aria-label="Sections">
           <a href="#news">News</a>
           <a href="#research">Research</a>
@@ -250,6 +313,23 @@
         </nav>
       </div>
     </header>
+
+    <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+      <div class="mobile-menu-head">
+        <a class="wordmark" href="#top">Kelvin Simatwo</a>
+        <button class="menu-close" id="menuClose" type="button" aria-label="Close menu">&times;</button>
+      </div>
+      <nav class="mobile-nav" aria-label="Sections">
+        <a href="#news">News <span class="no" aria-hidden="true">01</span></a>
+        <a href="#research">Research <span class="no" aria-hidden="true">02</span></a>
+        <a href="#education">Education <span class="no" aria-hidden="true">03</span></a>
+        <a href="#work">Work <span class="no" aria-hidden="true">04</span></a>
+        <a href="#experience">Experience <span class="no" aria-hidden="true">05</span></a>
+        <a href="#publications">Publications <span class="no" aria-hidden="true">06</span></a>
+        <a href="#awards">Awards <span class="no" aria-hidden="true">07</span></a>
+        <a href="#contact">Contact <span class="no" aria-hidden="true">08</span></a>
+      </nav>
+    </div>
 
     <main id="top">
       <!-- HERO -->
@@ -646,8 +726,7 @@
           </ul>
         </div>
         <div class="foot-base">
-          <span>© 2026 Kelvin Simatwo · Loughborough, UK</span>
-          <span class="mono">DESIGN PREVIEW · CONTENT AS OF 26 NOV 2026</span>
+          <span>© 2026 Kelvin Simatwo</span>
         </div>
       </div>
     </footer>
@@ -674,22 +753,74 @@
         });
       })();
 
-      // Scroll-spy for the top nav
+      // Mobile hamburger menu
       (function () {
-        var links = Array.prototype.slice.call(document.querySelectorAll("nav.main a"));
-        var map = {};
-        links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
+        var toggle = document.getElementById("menuToggle");
+        var menu = document.getElementById("mobileMenu");
+        var closeBtn = document.getElementById("menuClose");
+        if (!toggle || !menu) return;
+        var lastFocus = null;
+        function openMenu() {
+          lastFocus = document.activeElement;
+          menu.hidden = false;
+          // Force reflow so the transition runs
+          void menu.offsetWidth;
+          menu.classList.add("open");
+          toggle.setAttribute("aria-expanded", "true");
+          toggle.setAttribute("aria-label", "Close menu");
+          document.body.classList.add("menu-open");
+          if (closeBtn) closeBtn.focus();
+        }
+        function closeMenu() {
+          menu.classList.remove("open");
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.setAttribute("aria-label", "Open menu");
+          document.body.classList.remove("menu-open");
+          window.setTimeout(function () { menu.hidden = true; }, 230);
+          if (lastFocus && lastFocus.focus) lastFocus.focus();
+        }
+        toggle.addEventListener("click", function () {
+          if (menu.classList.contains("open")) closeMenu(); else openMenu();
+        });
+        if (closeBtn) closeBtn.addEventListener("click", closeMenu);
+        menu.querySelectorAll("a").forEach(function (a) {
+          a.addEventListener("click", function () {
+            // Let the anchor navigate, just clean up the overlay state
+            menu.classList.remove("open");
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.setAttribute("aria-label", "Open menu");
+            document.body.classList.remove("menu-open");
+            menu.hidden = true;
+          });
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && menu.classList.contains("open")) closeMenu();
+        });
+        // If resized to desktop while open, reset
+        window.addEventListener("resize", function () {
+          if (window.innerWidth > 820 && menu.classList.contains("open")) {
+            menu.classList.remove("open");
+            menu.hidden = true;
+            toggle.setAttribute("aria-expanded", "false");
+            document.body.classList.remove("menu-open");
+          }
+        });
+      })();
+
+      // Scroll-spy for the top nav (desktop + mobile menu)
+      (function () {
+        var links = Array.prototype.slice.call(document.querySelectorAll("nav.main a, .mobile-nav a"));
         if (!("IntersectionObserver" in window)) return;
         var spy = new IntersectionObserver(function (entries) {
           entries.forEach(function (e) {
             if (e.isIntersecting) {
-              links.forEach(function (a) { a.classList.remove("active"); });
-              var link = map[e.target.id];
-              if (link) link.classList.add("active");
+              links.forEach(function (a) {
+                a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id);
+              });
             }
           });
         }, { rootMargin: "-30% 0px -60% 0px" });
-        ["news", "research", "education", "work", "experience", "publications", "awards", "toolkit"].forEach(function (id) {
+        ["news", "research", "education", "work", "experience", "publications", "awards", "toolkit", "contact"].forEach(function (id) {
           var el = document.getElementById(id);
           if (el) spy.observe(el);
         });
